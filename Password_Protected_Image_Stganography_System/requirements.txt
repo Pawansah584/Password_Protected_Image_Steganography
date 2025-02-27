@@ -1,0 +1,9 @@
+Pillow
+tk
+cryptography
+sqlite3
+bcrypt
+pwinput
+customtkinter
+pycryptodome
+
