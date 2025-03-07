@@ -1,6 +1,6 @@
 from tkinter import *
 from tkinter import ttk, messagebox
-from auth import register_user, login_user
+from auth import register_user, login_user, is_valid_password
 from encoder_decoder import encode_message_gui, decode_message_gui
 
 class Stegno:
@@ -21,10 +21,15 @@ class Stegno:
         ttk.Button(self.root, text="Back to Login", command=self.login).pack(pady=10)
 
     def process_register(self, user_entry, pass_entry):
-        if register_user(user_entry.get(), pass_entry.get()):
-            messagebox.showinfo("Success", "Registration successful! Please login."); self.login()
+        username, password = user_entry.get(), pass_entry.get()
+        if not is_valid_password(password):
+            messagebox.showerror("Error", "Password must be at least 8 characters long and include lowercase, uppercase, digit, and special symbol.")
+            return
+        if register_user(username, password):
+            messagebox.showinfo("Success", "Registration successful! Please login.")
+            self.login()
         else:
-            messagebox.showerror("Error", "Username already exists!")
+            messagebox.showerror("Error", "Username already exists or invalid input.")
 
     def login(self):
         self.clear_window("Login")
@@ -48,16 +53,21 @@ class Stegno:
         ttk.Button(self.root, text="Decode", command=decode_message_gui).pack(pady=20)
 
     def clear_window(self, title):
-        for widget in self.root.winfo_children(): widget.destroy()
-        self.root.title(title), self.root.geometry("800x600")
+        for widget in self.root.winfo_children():
+            widget.destroy()
+        self.root.title(title)
+        self.root.geometry("800x600")
 
     def create_form(self):
         Label(self.root, text="Username:", font=("Helvetica", 18, "bold"), bg="#808e75", fg="white").pack(pady=10)
-        user_entry = ttk.Entry(self.root); user_entry.pack(pady=10)
+        user_entry = ttk.Entry(self.root)
+        user_entry.pack(pady=10)
         Label(self.root, text="Password:", font=("Helvetica", 18, "bold"), bg="#808e75", fg="white").pack(pady=10)
-        pass_entry = ttk.Entry(self.root, show="*"); pass_entry.pack(pady=10)
+        pass_entry = ttk.Entry(self.root, show="*")
+        pass_entry.pack(pady=10)
         return user_entry, pass_entry
 
 def start_gui():
-    root = Tk(); Stegno(root); root.mainloop()
-
+    root = Tk()
+    Stegno(root)
+    root.mainloop()
